@@ -39,7 +39,7 @@ struct GOL_Grid next_GOL_configuration(struct GOL_Grid const * const grid) {
 
 			j = ((row ^ (row - 1)) + 1) >> 1;
 			
-			n_mask = (j << 1) | j | (j >> 1);
+			n_mask = (j == 0x80? 0x01 : (j << 1)) | j | (j == 0x01? 0x80 : (j >> 1));
 
 			neighborhood_count = count_bits(grid->squares[i] & ((j << 1) | (j >> 1)))
 				           + count_bits(grid->squares[(i + 1) & 0x7] & n_mask)
@@ -72,8 +72,8 @@ void print_grid(struct GOL_Grid grid) {
 
 int main(void) {
 	struct GOL_Grid grid;
-	grid.squares[0] = 0x03;
-	grid.squares[1] = 0x03;
+	grid.squares[0] = 0x81;
+	grid.squares[1] = 0x81;
 	grid.squares[2] = 0x00;
 	grid.squares[3] = 0x00;
 	grid.squares[4] = 0x00;
