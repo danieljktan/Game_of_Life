@@ -84,19 +84,9 @@ struct GOL_Grid next_GOL_configuration(struct GOL_Grid const * const grid) {
 			if(neighborhood_count == 2 || neighborhood_count == 3) {
 				next_grid.squares[i] |= j;
 			}
-			//next_grid.squares[(i - 1) & 0x07] |= handle_dead_cell((grid->squares[(i - 1) & 0x07] & n_mask) ^ n_mask, 
-			//		grid, (i - 1) & 0x07);
 
-			//next_grid.squares[i] |= handle_dead_cell((grid->squares[i] & central_n_mask) ^ central_n_mask, grid, i);
-
-			//next_grid.squares[(i + 1) & 0x07] |= handle_dead_cell((grid->squares[(i + 1) & 0x07] & n_mask) ^ n_mask,
-			//		grid, (i + 1) & 0x07);
 			row &= row - 1;
 		}
-
-		//row = grid->squares[i];
-		//n_mask = ((row << 1) | (row >> 1) | (row >> 7) | (row << 7) | row) ^ row;
-		
 
 	}
 	
@@ -138,7 +128,10 @@ int main(int argc, char const *argv[]) {
 			grid = next_GOL_configuration(&grid);
 
 		}
+		break;
 
+	default:
+		printf("Invalid arguments\n");
 	
 	}
 
