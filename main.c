@@ -45,7 +45,7 @@ char unsigned handle_dead_cell(char unsigned dead_mask, struct GOL_Grid const * 
 
 		dead_mask &= dead_mask - 1;
 	}
-
+	printf("total alive cells: ");print_byte(total_alive_cells);
 	return total_alive_cells;
 }
 
@@ -75,13 +75,12 @@ struct GOL_Grid next_GOL_configuration(struct GOL_Grid const * const grid) {
 			if(neighborhood_count == 2 || neighborhood_count == 3) {
 				next_grid.squares[i] |= j;
 			}
-			
+			next_grid.squares[(i - 1) & 0x07] |= handle_dead_cell((grid->squares[(i - 1) & 0x07] & n_mask) ^ n_mask, 
+					grid, (i - 1) & 0x07);
 			next_grid.squares[i] |= handle_dead_cell((grid->squares[i] & central_n_mask) ^ central_n_mask, grid, i);
 			next_grid.squares[(i + 1) & 0x07] |= handle_dead_cell((grid->squares[(i + 1) & 0x07] & n_mask) ^ n_mask,
 				       	grid, (i + 1) & 0x07);
-			
-			next_grid.squares[(i - 1) & 0x07] |= handle_dead_cell((grid->squares[(i - 1) & 0x07] & n_mask) ^ n_mask, 
-					grid, (i - 1) & 0x07);
+		
 			row &= row - 1;
 		}	
 	}
@@ -103,16 +102,16 @@ void print_grid(struct GOL_Grid grid) {
 
 int main(void) {
 	struct GOL_Grid grid;
-	grid.squares[0] = 0x07;
+	grid.squares[0] = 0x00;
 	grid.squares[1] = 0x00;
 	grid.squares[2] = 0x00;
-	grid.squares[3] = 0x00;
+	grid.squares[3] = 0x1c;
 	grid.squares[4] = 0x00;
 	grid.squares[5] = 0x00;
 	grid.squares[6] = 0x00;
 	grid.squares[7] = 0x00;
 	
-	for(int i = 0; i < 5; i++) {
+	for(int i = 0; i < 2; i++) {
 		printf("Generation: %d\n", i);
 		print_grid(grid);
 		grid = next_GOL_configuration(&grid);
