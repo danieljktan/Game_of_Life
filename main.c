@@ -45,7 +45,6 @@ char unsigned handle_dead_cell(char unsigned dead_mask, struct GOL_Grid const * 
 
 		dead_mask &= dead_mask - 1;
 	}
-	printf("total alive cells: ");print_byte(total_alive_cells);
 	return total_alive_cells;
 }
 
@@ -57,9 +56,13 @@ struct GOL_Grid next_GOL_configuration(struct GOL_Grid const * const grid) {
 	char unsigned neighborhood_count = 0;
 	char unsigned n_mask = 0;
 	char unsigned central_n_mask = 0;
-
+	
+	//initialization...
 	for(i = 0; i < 8; i++) {
 		next_grid.squares[i] = 0x00;
+	}
+
+	for(i = 0; i < 8; i++) {
 		row = grid->squares[i];
 		while(row) {
 			//obtain least significant one
@@ -77,10 +80,11 @@ struct GOL_Grid next_GOL_configuration(struct GOL_Grid const * const grid) {
 			}
 			next_grid.squares[(i - 1) & 0x07] |= handle_dead_cell((grid->squares[(i - 1) & 0x07] & n_mask) ^ n_mask, 
 					grid, (i - 1) & 0x07);
+
 			next_grid.squares[i] |= handle_dead_cell((grid->squares[i] & central_n_mask) ^ central_n_mask, grid, i);
+
 			next_grid.squares[(i + 1) & 0x07] |= handle_dead_cell((grid->squares[(i + 1) & 0x07] & n_mask) ^ n_mask,
-				       	grid, (i + 1) & 0x07);
-		
+					grid, (i + 1) & 0x07);
 			row &= row - 1;
 		}	
 	}
@@ -100,24 +104,37 @@ void print_grid(struct GOL_Grid grid) {
 	}
 }
 
-int main(void) {
+int main(int argc, char const *argv[]) {
 	struct GOL_Grid grid;
-	grid.squares[0] = 0x00;
-	grid.squares[1] = 0x00;
-	grid.squares[2] = 0x00;
-	grid.squares[3] = 0x1c;
+	grid.squares[0] = 0x40;
+	grid.squares[1] = 0x20;
+	grid.squares[2] = 0xe0;
+	grid.squares[3] = 0x00;
 	grid.squares[4] = 0x00;
 	grid.squares[5] = 0x00;
 	grid.squares[6] = 0x00;
 	grid.squares[7] = 0x00;
 	
-	for(int i = 0; i < 2; i++) {
-		printf("Generation: %d\n", i);
-		print_grid(grid);
-		grid = next_GOL_configuration(&grid);
-	}
+	int n;
+	switch(argc) {
+	case 1:
+		for(int i = 0; i < 26; i++) {
+			printf("Generation: %d\n", i);
+			print_grid(grid);
+			grid = next_GOL_configuration(&grid);
+		}
+		break;
+
+	case 2:
+		n = atoi(argv[1]);
+		for(int i = 0; i < n; i++) {
+			printf("Generation: %d\n", i);
+			print_grid(grid);
+			grid = next_GOL_configuration(&grid);
+
+		}
 
 	
-
+	}
 
 }
