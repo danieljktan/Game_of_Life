@@ -28,6 +28,7 @@ char unsigned handle_dead_cell(char unsigned dead_mask, struct GOL_Grid const * 
 	char unsigned central_n_mask = 0x00;
 	char unsigned neighborhood_count = 0;
 	char unsigned total_alive_cells = 0x00;
+	
 	while(dead_mask) {
 		
 		bit = ((dead_mask ^ (dead_mask - 1)) + 1) >> 1;
@@ -64,6 +65,11 @@ struct GOL_Grid next_GOL_configuration(struct GOL_Grid const * const grid) {
 
 	for(i = 0; i < 8; i++) {
 		row = grid->squares[i];
+		next_grid.squares[i] |= handle_dead_cell(((row << 1) | (row >> 1) | (row >> 7) | (row << 7) | row) ^ row, grid, i);
+		next_grid.squares[(i + 1) & 0x07] 
+			|= handle_dead_cell((((row << 1) | (row >> 1) | (row >> 7) | (row << 7) | row) ^ grid->squares[(i + 1) & 0x07]), 
+				grid, (i + 1) & 0x07);
+
 		while(row) {
 			//obtain least significant one
 
@@ -78,25 +84,24 @@ struct GOL_Grid next_GOL_configuration(struct GOL_Grid const * const grid) {
 			if(neighborhood_count == 2 || neighborhood_count == 3) {
 				next_grid.squares[i] |= j;
 			}
-			next_grid.squares[(i - 1) & 0x07] |= handle_dead_cell((grid->squares[(i - 1) & 0x07] & n_mask) ^ n_mask, 
-					grid, (i - 1) & 0x07);
+			//next_grid.squares[(i - 1) & 0x07] |= handle_dead_cell((grid->squares[(i - 1) & 0x07] & n_mask) ^ n_mask, 
+			//		grid, (i - 1) & 0x07);
 
-			next_grid.squares[i] |= handle_dead_cell((grid->squares[i] & central_n_mask) ^ central_n_mask, grid, i);
+			//next_grid.squares[i] |= handle_dead_cell((grid->squares[i] & central_n_mask) ^ central_n_mask, grid, i);
 
-			next_grid.squares[(i + 1) & 0x07] |= handle_dead_cell((grid->squares[(i + 1) & 0x07] & n_mask) ^ n_mask,
-					grid, (i + 1) & 0x07);
+			//next_grid.squares[(i + 1) & 0x07] |= handle_dead_cell((grid->squares[(i + 1) & 0x07] & n_mask) ^ n_mask,
+			//		grid, (i + 1) & 0x07);
 			row &= row - 1;
-		}	
+		}
+
+		//row = grid->squares[i];
+		//n_mask = ((row << 1) | (row >> 1) | (row >> 7) | (row << 7) | row) ^ row;
+		
+
 	}
 	
 	return next_grid;
 }
-
-
-
-
-
-
 
 void print_grid(struct GOL_Grid grid) {
 	for(int i = 0; i < 8; i++) {
